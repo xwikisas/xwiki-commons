@@ -28,7 +28,7 @@
   <parent>
     <groupId>org.xwiki.commons</groupId>
     <artifactId>xwiki-commons-tool-jenkins-base</artifactId>
-    <version>4.1-SNAPSHOT</version>
+    <version>4.4-SNAPSHOT</version>
     <relativePath>../xwiki-commons-tool-jenkins-base</relativePath>
   </parent>
   <artifactId>xwiki-commons-tool-jenkins-commons</artifactId>
@@ -40,8 +40,8 @@
       <!-- Generate Jenkins config.xml files.
            To use, run: mvn compile -->
       <plugin>
-        <groupId>com.goldin.plugins</groupId>
-        <artifactId>maven-jenkins-plugin</artifactId>
+        <groupId>com.github.goldin</groupId>
+        <artifactId>jenkins-maven-plugin</artifactId>
         <executions>
           <execution>
             <id>generate-jenkins-jobs</id>

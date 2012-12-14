@@ -28,7 +28,7 @@
   <parent>
     <groupId>org.xwiki.commons</groupId>
     <artifactId>xwiki-commons-tool-jenkins</artifactId>
-    <version>4.1-SNAPSHOT</version>
+    <version>4.4-SNAPSHOT</version>
   </parent>
   <artifactId>xwiki-commons-tool-jenkins-base</artifactId>
   <name>XWiki Commons - Tools - Jenkins - Base</name>
@@ -38,9 +38,9 @@
     <pluginManagement>
       <plugins>
         <plugin>
-          <groupId>com.goldin.plugins</groupId>
-          <artifactId>maven-jenkins-plugin</artifactId>
-          <version>0.2.3.6</version>
+          <groupId>com.github.goldin</groupId>
+          <artifactId>jenkins-maven-plugin</artifactId>
+          <version>0.2.5</version>
           <executions>
             <execution>
               <id>generate-jenkins-jobs</id>
@@ -58,14 +58,9 @@
                     <scmType>git</scmType>
                     <jdkName>default</jdkName>
                     <mavenName>Maven</mavenName>
-                    <mavenOpts>-Xmx1024m</mavenOpts>
-                    <numToKeep>10</numToKeep>
-                    <mavenGoals>clean install -Pci -Pintegration-tests -U</mavenGoals>
-                    <properties>
-                      <![CDATA[
-                        <hudson.plugins.disk__usage.DiskUsageProperty/>
-                      ]]>
-                    </properties>
+                    <mavenOpts>-Xmx1536m -XX:MaxPermSize=512m -Xms256m</mavenOpts>
+                    <numToKeep>20</numToKeep>
+                    <mavenGoals>clean install -Plegacy,integration-tests -U -e</mavenGoals>
                     <reporters>
                       <![CDATA[
                         <hudson.maven.reporters.MavenMailer>
@@ -83,17 +78,15 @@
                         <hudson.plugins.emotional__hudson.EmotionalHudsonPublisher/>
                       ]]>
                     </publishers>
-                    <!-- TODO: Remove the blockBuildWhenUpstreamBuilding part when
-                         http://evgeny-goldin.org/youtrack/issue/pl-588 is released -->
+                    <blockBuildWhenUpstreamBuilding>true</blockBuildWhenUpstreamBuilding>
+                    <triggers>
+                      <trigger>
+                        <type>github</type>
+                      </trigger>
+                    </triggers>
                     <process>
                       {{
-                      node.blockBuildWhenUpstreamBuilding[0].setValue('true')
                       node.scm[0].pruneBranches[0].setValue('true')
-
-                      def triggers = node.triggers[0]
-                      def gitHubNode = triggers.appendNode('com.cloudbees.jenkins.GitHubPushTrigger', '')
-                      gitHubNode.appendNode('spec', '')
-
                       node.ignoreUpstremChanges[0].setValue('false')
                       }}
                     </process>
