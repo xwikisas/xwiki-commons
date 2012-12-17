@@ -36,6 +36,7 @@
   <modules>
     <!-- Sorted Alphabetically -->
     <module>xwiki-commons-tool-enforcer-dependencies</module>
+    <module>xwiki-commons-tool-jenkins</module>
     <module>xwiki-commons-tool-license-resources</module>
     <module>xwiki-commons-tool-verification-resources</module>
     <module>xwiki-commons-tool-xar</module>
