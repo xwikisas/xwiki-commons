@@ -28,49 +28,37 @@
   <parent>
     <groupId>org.xwiki.commons</groupId>
     <artifactId>xwiki-commons-tool-jenkins-base</artifactId>
-    <version>4.4-SNAPSHOT</version>
+    <version>4.1-SNAPSHOT</version>
     <relativePath>../xwiki-commons-tool-jenkins-base</relativePath>
   </parent>
   <artifactId>xwiki-commons-tool-jenkins-commons</artifactId>
   <name>XWiki Commons - Tools - Jenkins - Commons</name>
   <packaging>pom</packaging>
   <description>Generate Jenkins Job configuration for XWiki Commons</description>
-  <profiles>
-    <profile>
-      <id>jenkins</id>
-      <properties>
-        <jenkins.id>xwiki-commons-${project.version}</jenkins.id>
-      </properties>
-      <build>
-        <plugins>
-          <!-- Generate Jenkins config.xml files.
-               To use, run: mvn compile -->
-          <plugin>
-            <groupId>com.github.goldin</groupId>
-            <artifactId>jenkins-maven-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>generate-jenkins-jobs</id>
-                <configuration>
-                  <jobs>
-                    <job>
-                      <id>${jenkins.id}</id>
-                      <parent>base</parent>
-                      <repository>
-                        <remote>git://github.com/xwiki/xwiki-commons.git</remote>
-                      </repository>
-                    </job>
-                  </jobs>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-          <plugin>
-            <groupId>org.codehaus.gmaven</groupId>
-            <artifactId>gmaven-plugin</artifactId>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-  </profiles>
+  <build>
+    <plugins>
+      <!-- Generate Jenkins config.xml files.
+           To use, run: mvn compile -->
+      <plugin>
+        <groupId>com.goldin.plugins</groupId>
+        <artifactId>maven-jenkins-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>generate-jenkins-jobs</id>
+            <configuration>
+              <jobs>
+                <job>
+                  <id>XWiki Commons ${project.version}</id>
+                  <parent>base</parent>
+                  <repository>
+                    <remote>git://github.com/xwiki/xwiki-commons.git</remote>
+                  </repository>
+                </job>
+              </jobs>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 </project>

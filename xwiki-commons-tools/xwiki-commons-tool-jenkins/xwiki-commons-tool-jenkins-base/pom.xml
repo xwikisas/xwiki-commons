@@ -28,137 +28,82 @@
   <parent>
     <groupId>org.xwiki.commons</groupId>
     <artifactId>xwiki-commons-tool-jenkins</artifactId>
-    <version>4.4-SNAPSHOT</version>
+    <version>4.1-SNAPSHOT</version>
   </parent>
   <artifactId>xwiki-commons-tool-jenkins-base</artifactId>
   <name>XWiki Commons - Tools - Jenkins - Base</name>
   <packaging>pom</packaging>
   <description>Base Job Configuration for Jenkins that other modules can depend on</description>
-  <properties>
-    <jenkins.url>http://localhost:8080/</jenkins.url>
-    <jenkins.upload.skip>true</jenkins.upload.skip>
-  </properties>
-  <profiles>
-    <profile>
-      <id>jenkins</id>
-      <build>
-        <pluginManagement>
-          <plugins>
-            <plugin>
-              <groupId>com.github.goldin</groupId>
-              <artifactId>jenkins-maven-plugin</artifactId>
-              <version>0.2.5</version>
-              <executions>
-                <execution>
-                  <id>generate-jenkins-jobs</id>
-                  <phase>compile</phase>
-                  <goals>
-                    <goal>generate</goal>
-                  </goals>
-                  <configuration>
-                    <outputDirectory>${project.build.directory}</outputDirectory>
-                    <generationPom>https://github.com/xwiki/xwiki-commons/blob/master/pom.xml</generationPom>
-                    <jenkinsUrl>${jenkins.url}</jenkinsUrl>
-                    <jobs combine.children="append">
-                      <job>
-                        <id>base</id>
-                        <abstract>true</abstract>
-                        <scmType>git</scmType>
-                        <jdkName>default</jdkName>
-                        <mavenName>Maven</mavenName>
-                        <mavenOpts>-Xmx1536m -XX:MaxPermSize=512m -Xms256m</mavenOpts>
-                        <numToKeep>20</numToKeep>
-                        <mavenGoals>clean install -Plegacy,integration-tests -U -e</mavenGoals>
-                        <reporters>
-                          <![CDATA[
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>com.goldin.plugins</groupId>
+          <artifactId>maven-jenkins-plugin</artifactId>
+          <version>0.2.3.6</version>
+          <executions>
+            <execution>
+              <id>generate-jenkins-jobs</id>
+              <phase>compile</phase>
+              <goals>
+                <goal>generate</goal>
+              </goals>
+              <configuration>
+                <generationPom>https://github.com/xwiki/xwiki-commons/blob/master/pom.xml</generationPom>
+                <jenkinsUrl>http://localhost:8080/</jenkinsUrl>
+                <jobs combine.children="append">
+                  <job>
+                    <id>base</id>
+                    <abstract>true</abstract>
+                    <scmType>git</scmType>
+                    <jdkName>default</jdkName>
+                    <mavenName>Maven</mavenName>
+                    <mavenOpts>-Xmx1024m</mavenOpts>
+                    <numToKeep>10</numToKeep>
+                    <mavenGoals>clean install -Pci -Pintegration-tests -U</mavenGoals>
+                    <properties>
+                      <![CDATA[
+                        <hudson.plugins.disk__usage.DiskUsageProperty/>
+                      ]]>
+                    </properties>
+                    <reporters>
+                      <![CDATA[
                         <hudson.maven.reporters.MavenMailer>
                         <recipients>notifications@xwiki.org</recipients>
                         <dontNotifyEveryUnstableBuild>false</dontNotifyEveryUnstableBuild>
                         <sendToIndividuals>false</sendToIndividuals>
                         </hudson.maven.reporters.MavenMailer>
                       ]]>
-                        </reporters>
-                        <publishers>
-                          <![CDATA[
+                    </reporters>
+                    <publishers>
+                      <![CDATA[
                         <hudson.tasks.test.AggregatedTestResultPublisher>
                         <includeFailedBuilds>false</includeFailedBuilds>
                         </hudson.tasks.test.AggregatedTestResultPublisher>
                         <hudson.plugins.emotional__hudson.EmotionalHudsonPublisher/>
                       ]]>
-                        </publishers>
-                        <blockBuildWhenUpstreamBuilding>true</blockBuildWhenUpstreamBuilding>
-                        <triggers>
-                          <trigger>
-                            <type>github</type>
-                          </trigger>
-                        </triggers>
-                        <process>
-                          {{
-                          node.scm[0].pruneBranches[0].setValue('true')
-                          node.ignoreUpstremChanges[0].setValue('false')
-                          }}
-                        </process>
-                      </job>
-                    </jobs>
-                  </configuration>
-                </execution>
-              </executions>
-            </plugin>
-            <plugin>
-              <groupId>org.codehaus.gmaven</groupId>
-              <artifactId>gmaven-plugin</artifactId>
-              <version>1.5</version>
-              <dependencies>
-                <dependency>
-                  <groupId>org.apache.httpcomponents</groupId>
-                  <artifactId>httpclient</artifactId>
-                  <version>4.2.2</version>
-                </dependency>
-              </dependencies>
-              <executions>
-                <execution>
-                  <phase>install</phase>
-                  <goals>
-                    <goal>execute</goal>
-                  </goals>
-                  <configuration>
-                    <providerSelection>1.8</providerSelection>
-                    <source>
-                      import org.apache.http.*;
-                      import org.apache.http.client.*;
-                      import org.apache.http.client.methods.*;
-                      import org.apache.http.entity.*;
-                      import org.apache.http.impl.client.*;
-                      import org.apache.http.auth.*
+                    </publishers>
+                    <!-- TODO: Remove the blockBuildWhenUpstreamBuilding part when
+                         http://evgeny-goldin.org/youtrack/issue/pl-588 is released -->
+                    <process>
+                      {{
+                      node.blockBuildWhenUpstreamBuilding[0].setValue('true')
+                      node.scm[0].pruneBranches[0].setValue('true')
 
-                      def jenkinsId = project.properties['jenkins.id']
-                      def jenkinsUrl = project.properties['jenkins.url']
-                      def jenkinsUser = project.properties['jenkins.user']
-                      assert jenkinsUrl != null, "User must be passed with -Djenkins.user=(username)"
-                      def jenkinsPass = project.properties['jenkins.pass']
-                      assert jenkinsPass != null, "Password must be passed with -Djenkins.pass=(username)"
+                      def triggers = node.triggers[0]
+                      def gitHubNode = triggers.appendNode('com.cloudbees.jenkins.GitHubPushTrigger', '')
+                      gitHubNode.appendNode('spec', '')
 
-                      // Read config.xml into string
-                      def content = new File("${project.build.directory}/${jenkinsId}/config.xml").text
-
-                      def client = new DefaultHttpClient();
-
-                      client.getCredentialsProvider().setCredentials(AuthScope.ANY,
-                          new UsernamePasswordCredentials(jenkinsUser, jenkinsPass));
-
-                      def post = new HttpPost("${jenkinsUrl}createItem?name=${jenkinsId}");
-                      post.setHeader("Content-Type", "text/xml")
-                      post.setEntity(new StringEntity(content))
-                      HttpResponse response = client.execute(post);
-                      assert response.getStatusLine().getStatusCode() == 200
-                    </source>
-                  </configuration>
-                </execution>
-              </executions>
-            </plugin>
-          </plugins>
-        </pluginManagement>
-      </build>
-    </profile>
-  </profiles>
+                      node.ignoreUpstremChanges[0].setValue('false')
+                      }}
+                    </process>
+                  </job>
+                </jobs>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
 </project>
