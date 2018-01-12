@@ -38,9 +38,10 @@ import org.xwiki.filter.job.FilterStreamJobRequest;
 import org.xwiki.filter.output.OutputFilterStream;
 import org.xwiki.filter.output.OutputFilterStreamFactory;
 import org.xwiki.job.AbstractJob;
-import org.xwiki.job.DefaultJobStatus;
 import org.xwiki.job.GroupedJob;
+import org.xwiki.job.Job;
 import org.xwiki.job.JobGroupPath;
+import org.xwiki.job.event.status.JobStatus;
 
 /**
  * Perform a Filter conversion.
@@ -52,8 +53,7 @@ import org.xwiki.job.JobGroupPath;
 @InstantiationStrategy(ComponentInstantiationStrategy.PER_LOOKUP)
 @Named(FilterStreamConverterJob.JOBTYPE)
 public class FilterStreamConverterJob
-    extends AbstractJob<FilterStreamConverterJobRequest, DefaultJobStatus<FilterStreamConverterJobRequest>>
-    implements GroupedJob
+    extends AbstractJob<FilterStreamConverterJobRequest, FilterSreamConverterJobStatus> implements GroupedJob
 {
     /**
      * The id of the job.
@@ -69,6 +69,15 @@ public class FilterStreamConverterJob
     @Inject
     @Named("context")
     private Provider<ComponentManager> componentManagerProvider;
+
+    @Override
+    protected FilterSreamConverterJobStatus createNewStatus(FilterStreamConverterJobRequest request)
+    {
+        Job currentJob = this.jobContext.getCurrentJob();
+        JobStatus currentJobStatus = currentJob != null ? currentJob.getStatus() : null;
+        return new FilterSreamConverterJobStatus(getType(), request, currentJobStatus, this.observationManager,
+            this.loggerManager);
+    }
 
     @Override
     public String getType()
