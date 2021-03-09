@@ -52,6 +52,7 @@ import org.w3c.dom.ls.LSSerializer;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
+import org.xwiki.stability.Unstable;
 
 /**
  * XML Utility methods.
