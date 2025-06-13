@@ -6,7 +6,7 @@ These libraries can be used by projects outside of the XWiki ecosystem, are gene
 
 XWiki Platform, XWiki Commons and XWiki Rendering are part of the [XWiki.org](http://www.xwiki.org/) software forge. They are released together and share the same version.
 
-## Backported issues
+## Backported issues
 
 The following list of issues were backported but not released (was supposed to be released as 14.10.22 but the branch was dropped before):
 
