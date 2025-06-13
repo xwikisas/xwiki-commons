@@ -6,6 +6,23 @@ These libraries can be used by projects outside of the XWiki ecosystem, are gene
 
 XWiki Platform, XWiki Commons and XWiki Rendering are part of the [XWiki.org](http://www.xwiki.org/) software forge. They are released together and share the same version.
 
+## Backported issues
+
+The following list of issues were backported but not released (was supposed to be released as 14.10.22 but the branch was dropped before):
+
+Bug
+
+    [XCOMMONS-2754] - Upgrade from OIDC Provider 1.37.4 to 2.0.1 fails
+    [XCOMMONS-3000] - List property serialization does not always escape values that would require it
+    [XCOMMONS-3145] - The "optional" dependency metadata coming from an XWiki Repository is lost
+    [XCOMMONS-3146] - WrappingRatingExtension#getRating() is not returning the right value
+
+Task
+
+    [XCOMMONS-2857] - Upgrade to Bouncy Castle 1.77
+    [XCOMMONS-2983] - Introduce a dedicated nexus instance for snapshots
+    [XCOMMONS-2990] - Upgrade to Bouncy Castle 1.78
+
 ## Documentation
 * [Documentation](http://commons.xwiki.org/)
 * [API](http://platform.xwiki.org/xwiki/bin/view/DevGuide/API)
