@@ -59,15 +59,15 @@ class ClassLoaderUtilsTest
     @BeforeEach
     void beforeEach() throws MalformedURLException
     {
-        this.classLoader = mock();
+        this.classLoader = mock(ClassLoader.class);
 
         this.resouceURL = new URL("http://host");
         this.prefixedResourceURL = new URL("http://host");
         when(this.classLoader.getResource(RESOURCE_NAME)).thenReturn(this.resouceURL);
         when(this.classLoader.getResource(PREFIXED_RESOURCE_NAME)).thenReturn(this.prefixedResourceURL);
 
-        this.inputStream = mock();
-        this.prefixedInputStream = mock();
+        this.inputStream = mock(InputStream.class);
+        this.prefixedInputStream = mock(InputStream.class);
         when(this.classLoader.getResourceAsStream(RESOURCE_NAME)).thenReturn(this.inputStream);
         when(this.classLoader.getResourceAsStream(PREFIXED_RESOURCE_NAME)).thenReturn(this.prefixedInputStream);
     }
